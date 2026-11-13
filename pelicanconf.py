@@ -23,8 +23,15 @@ PYGMENTS_STYLE = 'github'  # Light mode
 PYGMENTS_STYLE_DARK = 'native'  # Dark mode
 
 # Static files
-STATIC_PATHS = ['images']
+STATIC_PATHS = ['images', 'extra']
 SITELOGO = '/images/bumikha.jpeg'
+
+EXTRA_PATH_METADATA = {
+    'extra/admin/index.html': {'path': 'admin/index.html'},
+}
+
+ARTICLE_EXCLUDES = ['extra']
+PAGE_EXCLUDES = ['extra']
 
 # Feed generation is usually not desired when developing
 FEED_ALL_ATOM = None

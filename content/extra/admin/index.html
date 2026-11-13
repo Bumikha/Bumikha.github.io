@@ -1,7 +1,7 @@
-<!doctype html>
-<html lang=“en”><head>
-<meta charset=“utf-8">
-<meta name=“viewport” content=“width=device-width, initial-scale=1">
+﻿<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Blog Admin</title>
 <style>
 body{font-family:system-ui,sans-serif;max-width:640px;margin:0 auto;padding:16px}
@@ -13,83 +13,83 @@ li{padding:10px 0;border-bottom:1px solid #ccc;cursor:pointer}
 .head img{width:56px;height:56px;border-radius:50%;object-fit:cover}
 .head h2{margin:0}
 </style></head><body>
-<div class=“head”>
-<img src=“/images/hemavarshini.jpeg” alt=“Hema Varshini”>
+<div class="head">
+<img src="/images/hemavarshini.jpeg" alt="Hema Varshini">
 <h2>Blog Admin</h2>
 </div>
-<p id=“msg”></p>
+<p id="msg"></p>
 
-<div id=“login”>
-<input id=“u” placeholder=“Username” autocomplete=“username” autocapitalize=“none” autocorrect=“off” spellcheck=“false”>
-<input id=“p” type=“password” placeholder=“Password” autocomplete=“current-password” autocapitalize=“none”>
-<button onclick=“login()“>Log in</button>
+<div id="login">
+<input id="u" placeholder="Username" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false">
+<input id="p" type="password" placeholder="Password" autocomplete="current-password" autocapitalize="none">
+<button onclick="login()">Log in</button>
 </div>
 
-<div id=“app” class=“hidden”>
-<button onclick=“logout()“>Log out</button>
-<div id=“editorBox” class=“hidden”>
+<div id="app" class="hidden">
+<button onclick="logout()">Log out</button>
+<div id="editorBox" class="hidden">
 <h3>All mobile posts (tap to edit)</h3>
-<ul id=“list”></ul>
+<ul id="list"></ul>
 </div>
-<h3 id=“formTitle”>New post</h3>
-<input id=“title” placeholder=“Title”>
-<input id=“date” type=“date”>
-<input id=“category” placeholder=“Category (e.g. GenAI)“>
-<input id=“tags” placeholder=“Tags, comma separated”>
-<input id=“slug” placeholder=“Slug (optional, e.g. my-first-post)” autocapitalize=“none” autocorrect=“off” spellcheck=“false”>
-<select id=“status” class=“hidden”>
-<option value=“ready”>Ready (published)</option>
-<option value=“draft”>Draft (hidden)</option>
+<h3 id="formTitle">New post</h3>
+<input id="title" placeholder="Title">
+<input id="date" type="date">
+<input id="category" placeholder="Category (e.g. GenAI)">
+<input id="tags" placeholder="Tags, comma separated">
+<input id="slug" placeholder="Slug (optional, e.g. my-first-post)" autocapitalize="none" autocorrect="off" spellcheck="false">
+<select id="status" class="hidden">
+<option value="ready">Ready (published)</option>
+<option value="draft">Draft (hidden)</option>
 </select>
-<textarea id=“content” placeholder=“Write in Markdown”></textarea>
-<button onclick=“save()“>Submit</button>
-<button id=“cancel” class=“hidden” onclick=“resetForm()“>Cancel edit</button>
+<textarea id="content" placeholder="Write in Markdown"></textarea>
+<button onclick="save()">Submit</button>
+<button id="cancel" class="hidden" onclick="resetForm()">Cancel edit</button>
 </div>
 
 <script>
-const API = ’https://blog-admin-api-mu4l.onrender.com';
-let token = sessionStorage.getItem(‘t’);
-let role = sessionStorage.getItem(‘r’);
+const API = 'https://blog-admin-api-mu4l.onrender.com';
+let token = sessionStorage.getItem('t');
+let role = sessionStorage.getItem('r');
 let editId = null;
 const $ = id => document.getElementById(id);
-const say = t => $(‘msg’).textContent = t;
+const say = t => $('msg').textContent = t;
 
-async function api(path, method = ‘GET’, body) {
+async function api(path, method = 'GET', body) {
 const r = await fetch(API + path, {
 method,
-headers: { ‘Content-Type’: ‘application/json’,
-...(token ? { Authorization: ‘Bearer ’ + token } : {}) },
+headers: { 'Content-Type': 'application/json',
+...(token ? { Authorization: 'Bearer ' + token } : {}) },
 body: body ? JSON.stringify(body) : undefined,
 });
 const data = await r.json().catch(() => ({}));
-if (!r.ok) throw new Error(data.error || ‘Request failed’);
+if (!r.ok) throw new Error(data.error || 'Request failed');
 return data;
 }
 
 async function login() {
 try {
-say(‘Logging in... (can take a minute if the server was asleep)‘);
-const d = await api(‘/login’, ‘POST’, { username: $(‘u’).value.trim(), password: $(‘p’).value });
+say('Logging in... (can take a minute if the server was asleep)');
+const d = await api('/login', 'POST', { username: $('u').value.trim(), password: $('p').value });
 token = d.token; role = d.role;
-sessionStorage.setItem(‘t’, token); sessionStorage.setItem(‘r’, role);
-say(‘’); show();
+sessionStorage.setItem('t', token); sessionStorage.setItem('r', role);
+say(''); show();
 } catch (e) { say(e.message); }
 }
 
 function logout() { sessionStorage.clear(); token = role = null; location.reload(); }
 
 function show() {
-$(‘login’).classList.add(‘hidden’);
-$(‘app’).classList.remove(‘hidden’);
-if (role === ‘editor’) { $(‘editorBox’).classList.remove(‘hidden’); loadList(); }
+$('login').classList.add('hidden');
+$('app').classList.remove('hidden');
+if (role === 'editor') { $('editorBox').classList.remove('hidden'); loadList(); }
 }
 
 async function loadList() {
 try {
-const posts = await api(‘/posts’);
-const ul = $(‘list’); ul.textContent = ‘’;
+const posts = await api('/posts');
+const ul = $('list'); ul.textContent = '';
 posts.forEach(p => {
-const li = document.createElement(‘li’);
+const li = document.createElement('li');
 li.textContent = ${p.title} (${p.status}, ${p.author});
 li.onclick = () => openPost(p._id);
 ul.appendChild(li);
@@ -99,44 +99,44 @@ ul.appendChild(li);
 
 async function openPost(id) {
 try {
-const p = await api(‘/posts/’ + id);
+const p = await api('/posts/' + id);
 editId = id;
-$(‘title’).value = p.title; $(‘category’).value = p.category;
-$(‘tags’).value = p.tags; $(‘content’).value = p.content;
-$(‘date’).value = p.date;
-$(‘slug’).value = p.slug; $(‘slug’).disabled = true;
-$(‘status’).value = p.status;
-$(‘status’).classList.remove(‘hidden’); $(‘cancel’).classList.remove(‘hidden’);
-$(‘formTitle’).textContent = ‘Editing: ’ + p.slug;
+$('title').value = p.title; $('category').value = p.category;
+$('tags').value = p.tags; $('content').value = p.content;
+$('date').value = p.date;
+$('slug').value = p.slug; $('slug').disabled = true;
+$('status').value = p.status;
+$('status').classList.remove('hidden'); $('cancel').classList.remove('hidden');
+$('formTitle').textContent = 'Editing: ' + p.slug;
 window.scrollTo(0, document.body.scrollHeight);
 } catch (e) { say(e.message); }
 }
 
 function resetForm() {
 editId = null;
-[‘title’, ‘category’, ‘tags’, ‘content’, ‘slug’].forEach(i => $(i).value = ‘’);
-$(‘slug’).disabled = false;
-$(‘date’).value = new Date().toLocaleDateString(‘en-CA’);
-$(‘status’).classList.add(‘hidden’); $(‘cancel’).classList.add(‘hidden’);
-$(‘formTitle’).textContent = ‘New post’;
+['title', 'category', 'tags', 'content', 'slug'].forEach(i => $(i).value = '');
+$('slug').disabled = false;
+$('date').value = new Date().toLocaleDateString('en-CA');
+$('status').classList.add('hidden'); $('cancel').classList.add('hidden');
+$('formTitle').textContent = 'New post';
 }
 
 async function save() {
-const body = { title: $(‘title’).value, date: $(‘date’).value, category: $(‘category’).value,
-tags: $(‘tags’).value, slug: $(‘slug’).value.trim(), content: $(‘content’).value };
+const body = { title: $('title').value, date: $('date').value, category: $('category').value,
+tags: $('tags').value, slug: $('slug').value.trim(), content: $('content').value };
 try {
-if (editId) { body.status = $(‘status’).value; await api(‘/posts/’ + editId, ‘PUT’, body); }
-else await api(‘/posts’, ‘POST’, body);
-say(‘Saved. It goes live on the next site build (up to ~15 min).’);
+if (editId) { body.status = $('status').value; await api('/posts/' + editId, 'PUT', body); }
+else await api('/posts', 'POST', body);
+say('Saved. It goes live on the next site build (up to ~15 min).');
 resetForm();
-if (role === ‘editor’) loadList();
+if (role === 'editor') loadList();
 } catch (e) {
 say(e.message);
-if (e.message === ‘Not logged in’) logout();
+if (e.message === 'Not logged in') logout();
 }
 }
 
-$(‘date’).value = new Date().toLocaleDateString(‘en-CA’);
+$('date').value = new Date().toLocaleDateString('en-CA');
 if (token) show();
 </script>
 </body></html>
